@@ -1,31 +1,21 @@
-# ---- Base Node ----
-FROM node:11 AS base
+FROM node:11-alpine
 # Create app directory
 WORKDIR /app
 
-# ---- Dependencies ----
-FROM base AS dependencies  
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
-# install app dependencies including 'devDependencies'
+
+# Install app dependencies
 RUN npm install
 
-# ---- Copy Files/Build ----
-FROM dependencies AS build  
-WORKDIR /app
 COPY . /app
+
 # Build react/vue/angular bundle static files
 RUN npm run build
 
-# --- Release with Alpine ----
-FROM node:11-alpine AS release  
-# Create app directory
-WORKDIR /app
+#RUN rm -rf /app/node_modules
+
 # optional
-RUN npm -g install serve
-COPY --from=dependencies /app/package.json ./
-# Install app dependencies
-RUN npm install --only=production
-COPY --from=build /app ./
-CMD ["serve", "-s", "build", "-p", "8080"]
-#CMD ["node", "server.js"]
+#RUN npm -g install serve
+#CMD ["serve", "-s", "build", "-p", "8080"]
+CMD ["node", "server.js"]
+#CMD ["npm", "start"]
