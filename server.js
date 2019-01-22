@@ -6,11 +6,13 @@ app.use(express.static('build'));
 app.use(express.urlencoded({extended: true})); 
 app.use(express.json());
 
+app.get('/_status',(req, res, next)=>{
+    return res.json(process.env);
+})
 
 let server = app.listen(port, () => {
     console.log(`m360 app listening on port ${port}!`)
 });
-
 
 function closeApplication(){
     if (server===null) return; 
