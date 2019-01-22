@@ -23,6 +23,9 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.internalPort }}
+        volumeMounts:
+        - name: redis
+          mountPath: "/etc/redis"
         env:
         - name: REDIS_PASSWORD
           valueFrom:
@@ -50,3 +53,8 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 12 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      volumes:
+      - name: redis
+        secret:
+          secretName: "{{.Release.Namespace}}-fecache"
+

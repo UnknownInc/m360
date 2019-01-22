@@ -1,13 +1,21 @@
+const fs = require('fs');
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 8080;
+const config = {};
+
+config.env=process.env;
+config.VERSION = fs.readFileSync('./VERSION').toString();
+config.REDIS_PASSWORD = fs.readFileSync('/etc/redis/redis-password').toString(); 
 
 app.use(express.static('build'));
 app.use(express.urlencoded({extended: true})); 
 app.use(express.json());
 
 app.get('/_status',(req, res, next)=>{
-    return res.json(process.env);
+    let status={};
+    status.config = config;
+    return res.json(status);
 })
 
 let server = app.listen(port, () => {
