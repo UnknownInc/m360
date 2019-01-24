@@ -45,11 +45,12 @@ let server = app.listen(app.config.port, () => {
 
 function closeApplication(){
     if (server===null) return; 
-    console.log('Closing http server.');
+    console.log('closing http server.');
     server.close(() => {
         console.log('http server closed.');
         server=null;
         try {
+          console.log('closing cache connection.')
           app.cache.end(true);
         } catch(cerr) {
           console.error('ERROR: unable to end cache connection.', cerr);
