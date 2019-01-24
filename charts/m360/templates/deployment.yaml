@@ -27,6 +27,8 @@ spec:
         - name: redis
           mountPath: "/etc/redis"
         env:
+        - name: NAMESPACE
+          value: "{{.Release.Namespace}}"
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef: 
