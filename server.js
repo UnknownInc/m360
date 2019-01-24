@@ -27,24 +27,34 @@ app.use(express.static('build'));
 app.use(express.urlencoded({extended: true})); 
 app.use(express.json());
 
-app.get('/_status',(req, res, next)=>{
+app.get('/_status',async (req, res, next)=>{
     let result = Object.assign({}, app.status);
-
     result.config = Object.assign({},app.config);
-    return res.json(result);
+
+    result.health = {
+      cache: app.cache.status
+    };
+
+    res.json(result);
+    return;
 })
 
 let server = app.listen(app.config.port, () => {
-    console.log(`m360 app listening on port ${app.config.port}!`)
+    console.log(`m360 http server listening on port ${app.config.port}!`)
 });
 
 function closeApplication(){
     if (server===null) return; 
     console.log('Closing http server.');
     server.close(() => {
-        console.log('Http server closed.');
-        server=null
-        app.cache.end(true);
+        console.log('http server closed.');
+        server=null;
+        try {
+          app.cache.end(true);
+        } catch(cerr) {
+          console.error('ERROR: unable to end cache connection.', cerr);
+        }
+
         process.exit(0);
         /*
         // boolean means [force], see in mongoose doc
