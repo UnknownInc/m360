@@ -26,6 +26,9 @@ spec:
         volumeMounts:
         - name: redis
           mountPath: "/etc/redis"
+        volumeMounts:
+        - name: db
+          mountPath: "/etc/db"
         env:
         - name: NAMESPACE
           value: "{{.Release.Namespace}}"
@@ -34,6 +37,11 @@ spec:
             secretKeyRef: 
               name: "{{.Release.Namespace}}-fecache"
               key: redis-password
+        - name: DB_CONN
+          valueFrom:
+            secretKeyRef: 
+              name: "{{.Release.Namespace}}-pulsedb"
+              key: connstr
 {{- if .Values.env}}
 {{ toYaml .Values.env | indent 8 }}
 {{- end }}
@@ -59,4 +67,7 @@ spec:
       - name: redis
         secret:
           secretName: "{{.Release.Namespace}}-fecache"
+      - name: db
+        secret:
+          secretName: "{{.Release.Namespace}}-pulsedb"
 

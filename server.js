@@ -1,16 +1,19 @@
 const fs = require('fs');
 const express = require('express');
 const util = require('util');
+const bodyParser = require('body-parser');
 
 const app = express();
 
 app.status = {};
 
 app.config = {};
+app.config.jwtsecret = 'HGFLUKHUIYUJ5876587HGVHCGKV<';
+app.config.account_api = `http://${process.env.ACCOUNT_SERVICE_HOST}:${process.env.ACCOUNT_SERVICE_PORT}`
 app.config.port = process.env.PORT || 8080;
-app.config.env=process.env;
+//app.config.env=process.env;
 
-function initialize(){
+async function initialize(){
   try {
     app.config.VERSION = fs.readFileSync('./VERSION').toString();
   } catch (e) {
@@ -19,13 +22,18 @@ function initialize(){
   }
 
   require('./redisCache').createClient(app);
+  await require('./db').createClient(app)
+  require('./session').createSession(app);
+
+  app.use(express.static('build'));
+  app.use(bodyParser.json({limit: '50mb'}));
+  app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 }
 
-initialize();
-
-app.use(express.static('build'));
-app.use(express.urlencoded({extended: true})); 
-app.use(express.json());
+app.get('/ping', async (req, res)=>{
+  //req.session.profile = {email:'rravuri@gmail.com', username:'rravuri', isAdmin: true};
+  return res.send('pong');
+})
 
 app.get('/_status',async (req, res, next)=>{
     let result = Object.assign({}, app.status);
@@ -35,12 +43,17 @@ app.get('/_status',async (req, res, next)=>{
       cache: app.cache.status
     };
 
-    res.json(result);
-    return;
+    return res.json(result);
 })
 
-let server = app.listen(app.config.port, () => {
-    console.log(`m360 http server listening on port ${app.config.port}!`)
+
+let server;
+
+initialize().then(()=>{
+  app.use(require('./routes'))
+  server = app.listen(app.config.port, () => {
+      console.log(`m360 http server listening on port ${app.config.port}!`)
+  });
 });
 
 function closeApplication(){
