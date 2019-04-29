@@ -52,10 +52,10 @@ let server;
 initialize().then(()=>{
   app.use(require('./routes'))
   app.get('*', function(req, res){
-    res.sendFile('./build/index.html');
+    res.sendFile(path.join(__dirname, './build', 'index.html'));
   });
   server = app.listen(app.config.port, () => {
-      console.log(`m360 http server listening on port ${app.config.port}!`)
+    console.log(`m360 http server listening on port ${app.config.port}!`)
   });
 });
 
