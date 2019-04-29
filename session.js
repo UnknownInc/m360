@@ -18,7 +18,7 @@ module.exports ={
 
         if (app.get('env') === 'production') {
             app.set('trust proxy', 1) // trust first proxy
-            sessionOptions.cookie.secure = true // serve secure cookies
+            //sessionOptions.cookie.secure = true // serve secure cookies
             sessionOptions.store = new RedisStore({
                 client: app.cache
             })
