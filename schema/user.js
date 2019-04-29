@@ -33,7 +33,7 @@ class UserClass {
     return this.findOne({ email: email.trim().toLowerCase() });
   }
 }
-
+userSchema.index({email: 1})
 userSchema.loadClass(UserClass);
 
 module.exports = userSchema

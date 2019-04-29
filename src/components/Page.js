@@ -8,7 +8,7 @@ export default props => {
   if (props.loading) {
     return <div className='page'>
       <div style={{display:'flex', justifyContent:'center', padding: "1em"}}>
-        <Loader active inline size='massive'> Loading...</Loader>
+        <Loader active inline size='massive'>{props.loadingMsg||'Loading...'}</Loader>
       </div>
     </div>
   }

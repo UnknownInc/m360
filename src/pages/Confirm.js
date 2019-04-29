@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom'
 import { notify } from 'react-notify-toast'
 import { ACCOUNT_API } from '../config'
 import { Dimmer, Form, Loader } from 'semantic-ui-react';
+import Page from '../components/Page';
 
 export default class Confirm extends Component {
   
@@ -65,29 +66,26 @@ export default class Confirm extends Component {
       </div>
     }
 
-    return (<div style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems: 'center'}}>
-      <Dimmer.Dimmable as={'div'} dimmed={confirming}>
-        <Dimmer active={confirming}>
-          <Loader>Wait while we confirm...</Loader>
-        </Dimmer>
-      </Dimmer.Dimmable>
-      <Form
-        onSubmit={this.onConfirm}
-      >
-        <Form.Group>
-          <Form.Input 
-            name='email' 
-            type='email'
-            required 
-            placeholder='Confirm the registered email'
-            value={this.state.email}
-            onChange={this.handleChange}
-            action={{color:'blue', content:'Confirm'}}
-            size='huge'
-          />
-        </Form.Group>
-      </Form>
+    return (
+    <Page loading={confirming} loadingMsg='Wait while we confirm...'>
+      <div style={{display:'flex', justifyContent:'center', alignItems:'center', height:'80vh'}}>
+        <Form
+          onSubmit={this.onConfirm}>
+          <Form.Group>
+            <Form.Input 
+              name='email' 
+              type='email'
+              required 
+              placeholder='Confirm the registered email'
+              value={this.state.email}
+              onChange={this.handleChange}
+              action={{color:'blue', content:'Confirm'}}
+              size='huge'
+            />
+          </Form.Group>
+        </Form>
       </div>
+    </Page>
     )
   }
 }

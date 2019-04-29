@@ -3,7 +3,8 @@ import { notify } from 'react-notify-toast'
 import Spinner from '../components/Spinner'
 import { ACCOUNT_API, getHeaders } from '../config'
 import Home from './Home'
-import { Dimmer, Form, Loader } from 'semantic-ui-react';
+import { Dimmer, Form, Loader, Segment, Container } from 'semantic-ui-react';
+import Page from '../components/Page';
 
 export default class Landing extends Component {
 
@@ -84,37 +85,35 @@ export default class Landing extends Component {
       return this.renderHome()
     }
 
-    return (<div style={{display: 'flex', justifyContent:'center', alignItems:'center'}}>
-        <Dimmer.Dimmable as={'div'} dimmed={sendingEmail}>
-          <Dimmer active={sendingEmail}>
-            <Loader>Wait while we register your email...</Loader>
-          </Dimmer>
-          <Form
-            onSubmit={this.onSubmit}>
-            <Form.Group>
-            <Form.Input
-              placeholder='Your work email'
-              name='email'
-              type='email'
-              value={email}
-              onChange={this.handleChange}
-              required
-              error={!iagree}
-              size='huge'
-              disabled={!iagree }
-              action={{color:'blue', content:'Register'}}
-            />
-            </Form.Group>
-            <Form.Group>
-              <Form.Checkbox
-                name='iagree'
-                label='I agree to the Terms and Conditions'
-                checked={iagree}
-                onChange={this.handleCheckboxChange}
-                />
-            </Form.Group>
-          </Form>
-        </Dimmer.Dimmable>
-    </div>)
+    return (
+    <Page loading={sendingEmail}>
+      <div style={{display:'flex', alignItems:'center', justifyContent:'center', height:'80vh'}}>
+        <Form
+          onSubmit={this.onSubmit}>
+          <Form.Group>
+          <Form.Input
+            placeholder='Your work email'
+            name='email'
+            type='email'
+            value={email}
+            onChange={this.handleChange}
+            required
+            error={!iagree}
+            size='huge'
+            disabled={!iagree }
+            action={{color:'blue', content:'Register'}}
+          />
+          </Form.Group>
+          <Form.Group>
+            <Form.Checkbox
+              name='iagree'
+              label='I agree to the Terms and Conditions'
+              checked={iagree}
+              onChange={this.handleCheckboxChange}
+              />
+          </Form.Group>
+        </Form>
+      </div>
+    </Page>)
   }
 }

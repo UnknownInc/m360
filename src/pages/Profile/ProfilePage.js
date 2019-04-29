@@ -5,7 +5,7 @@ import Page from '../../components/Page';
 import { Container, Form, Header, Segment, Table, Icon, Checkbox, Button, Divider, Message, Popup, Responsive,Modal, FormButton, Tab, Comment } from 'semantic-ui-react';
 import { getProfile } from '../../config';
 import { isNullOrUndefined } from 'util';
-import TeamView from './TeamView';
+import TeamList from './TeamList';
 
 
 
@@ -56,14 +56,14 @@ class ProfilePage extends Component {
     </Form>
   }
   renderTeam(){
-    return <TeamView header="Team Members" profile={this.state.profile}/>
+    return <TeamList user={this.state.profile._id} editor/>
   }
   renderProfile(){
     const {profile} = this.state;
     if (isNullOrUndefined(profile)) return null;
     const panes = [
       { menuItem: 'Details', render: () => <Tab.Pane>{this.renderDetails()}</Tab.Pane> },
-      { menuItem: 'Team', render: () => <Tab.Pane>{this.renderTeam()}</Tab.Pane> },
+      { menuItem: 'Teams', render: () => <Tab.Pane>{this.renderTeam()}</Tab.Pane> },
     ]
     return <Segment>
       <Header as ='h2'><Icon name='user'/> Profile</Header>

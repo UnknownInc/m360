@@ -36,6 +36,16 @@ exports.verify = async (req, res) => {
       }
     );
 
+    const Node= req.app.db.models.Node;
+    try{
+      let n = Node.findOne({user: ObjectId(userid)});
+      if (!n) {
+        const n = new Node({user: ObjectId(userid)})
+        n.save();
+      }
+    } catch(ex) {
+      console.log(ex)
+    }
     return res.status(200).json({
       message: 'Successfully verified.',
       token
@@ -102,105 +112,6 @@ exports.getProfile = async (req, res) => {
   }
   res.set('Cache-Control', 'public, max-age=60');
   return res.json(user)
-}
-
-exports.updateTeam = async (req, res) => {
-  const user = req.user;
-  if (!user) {
-    return res.status(401).json({
-      error: 'Unknown user'
-    })
-  }
-
-  let userid=user._id;
-  if (req.query.user) {
-    if (!user.isAdmin) {
-      return res.sendStaus(403)
-    }
-    userid=req.query.user;
-  }
-
-  const User = req.app.db.models.User;
-  const Node = req.app.db.models.Node;
-  const query={user: ObjectId(userid)}
-
-  let add = req.body.add;
-  let remove = req.body.remove;
-
-  add=add||[];
-  remove=remove||[];
-
-  try {
-    let n = await Node.findOne(query)
-    if (!n) {
-      n = new Node({user: ObjectId(userid)})
-      n= await n.save();
-    }
-
-    const newemails=[]
-    add.forEach(newuseremail => {
-        newemails.push(newuseremail.trim().toLowerCase());
-    });
-
-    const newusers = await User.find({email:{'$in':newemails}});
-    newusers.forEach(nu=>{
-      n.children.addToSet(nu._id);
-    })
-
-    const oldemails=[]
-    remove.forEach(olduseremail => {
-        oldemails.push(olduseremail.trim().toLowerCase());
-    });
-
-    const oldusers = await User.find({email:{'$in':oldemails}});
-    oldusers.forEach(ou=>{
-      n.children.remove(ou._id);
-    })
-
-    console.log(n);
-    n = await n.save()
-    n = await Node.populate(n,{'path':'children'})
-    return res.json(n.toObject());
-  }
-  catch (err) {
-    console.error(err)
-    return res.sendStatus(500)
-  }
-}
-
-exports.getTeam = async (req, res) => {
-  const user = req.user;
-  if (!user) {
-    return res.status(401).json({
-      error: 'Unknown user'
-    })
-  }
-
-  let userid=user._id;
-  if (req.query.user) {
-    if (!user.isAdmin) {
-      return res.sendStaus(403)
-    }
-    userid=req.query.user;
-  }
-
-  const Node = req.app.db.models.Node;
-  const query={user: ObjectId(userid)}
-
-  try {
-    let n = await Node.findOne(query)
-    if (!n) {
-      n=new Node({user: ObjectId(userid), children:[]})
-      n = await n.save();
-    }
-    const team = await Node.populate(n,{'path':'children'})
-    
-    return res.json(team.toObject());
-  }
-  catch (err) {
-    console.error(err)
-    return res.status(500)
-  }
 }
 
 exports.getUsers = async (req, res) => {
