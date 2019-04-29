@@ -38,7 +38,7 @@ app.get('/ping', async (req, res)=>{
 app.get('/_status',async (req, res, next)=>{
     let result = Object.assign({}, app.status);
     result.config = Object.assign({},app.config);
-
+    result.config.jwtsecret=null;
     result.health = {
       cache: app.cache.status
     };
@@ -51,6 +51,9 @@ let server;
 
 initialize().then(()=>{
   app.use(require('./routes'))
+  app.get('*', function(req, res){
+    res.sendFile('./build/index.html');
+  });
   server = app.listen(app.config.port, () => {
       console.log(`m360 http server listening on port ${app.config.port}!`)
   });
